@@ -1,0 +1,41 @@
+name: GCS Trigger CD WORKFLOW
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - cloud-functions/bucket-trigger/*
+      - .github/workflows/gcs-trigger-cd.yml
+  workflow_dispatch:  # Enable manual triggering
+  
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0.2.0
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_CF_GHA_SA_KEY }}
+        export_default_credentials: false
+    
+    - name: 'deploy'
+      uses: 'google-github-actions/deploy-cloud-functions@v3'
+      timeout-minutes: 10
+      with:
+        name: 'gcs-event-trigger-cf'
+        runtime: 'python310'
+        service_timeout: '540s'
+        event_trigger_type: 'google.cloud.audit.log.v1.written'
+        event_trigger_filters: |-
+          serviceName=storage.googleapis.com
+          methodName=storage.objects.create
+          resourceName=PATTERN:/projects/_/buckets/demo-order-bkt/objects/incoming/*
+        entry_point: 'hello_gcs'
+        source_dir: './cloud-functions/bucket-trigger/'
