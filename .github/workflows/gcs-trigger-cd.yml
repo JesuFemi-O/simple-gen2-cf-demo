@@ -30,6 +30,7 @@ jobs:
       timeout-minutes: 10
       with:
         name: 'gcs-event-trigger-cf'
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
         runtime: 'python310'
         service_timeout: '540s'
         event_trigger_type: 'google.cloud.audit.log.v1.written'
