@@ -40,6 +40,6 @@ jobs:
         event_trigger_filters: |-
           serviceName=storage.googleapis.com
           methodName=storage.objects.create
-          resourceName=PATTERN:/projects/_/buckets/demo-order-bkt/objects/incoming/*
+          resourceName=PATTERN:projects/_/buckets/demo-order-bkt/objects/incoming
         entry_point: 'hello_gcs'
         source_dir: './cloud-functions/bucket-trigger/'
